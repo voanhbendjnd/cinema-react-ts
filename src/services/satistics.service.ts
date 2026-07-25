@@ -7,6 +7,7 @@ export interface TopMovieProjection {
     totalRevenue: number;
     ticketsSold: number;
     totalShowtimes: number;
+    occupancyRate: number;
 }
 
 export const statisticsService = {

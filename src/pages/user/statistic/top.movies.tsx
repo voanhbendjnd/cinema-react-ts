@@ -159,6 +159,16 @@ const TopMoviesPage: React.FC = () => {
             ),
         },
         {
+            title: 'Occupancy Rate',
+            dataIndex: 'occupancyRate',
+            key: 'occupancyRate',
+            width: 140,
+            align: 'center' as const,
+            render: (count: number) => (
+                <span style={{ fontWeight: 600, color: '#3b82f6' }}>{count}</span>
+            ),
+        },
+        {
             title: 'Revenue/Ticket',
             dataIndex: 'revenuePerTicket',
             key: 'revenuePerTicket',
