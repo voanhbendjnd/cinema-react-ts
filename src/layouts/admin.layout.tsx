@@ -107,6 +107,12 @@ const AdminLayout: React.FC = () => {
                           name: 'Top movies',
                           icon: <TagOutlined />,
                       },
+                      {
+                          path: `/${roleName}/statistics/occupancy/preview`,
+                          name: 'Preview occupancy',
+                          icon: <TagOutlined />,
+                      },
+
                   ]
                   : []),
 
