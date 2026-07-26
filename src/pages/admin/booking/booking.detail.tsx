@@ -61,7 +61,7 @@ const formatPrice = (price: number | undefined): string => {
         return '0.00';
     }
     try {
-        return (price / 1000000).toFixed(2);
+        return price;
     } catch (error) {
         return '0.00';
     }
@@ -171,7 +171,7 @@ const BookingDetailPage: React.FC = () => {
         <div
             style={{
                 minHeight: '100vh',
-                background: 'linear-gradient(135deg, #1a0000 0%, #3d0000 100%)',
+                // background: 'linear-gradient(135deg, #1a0000 0%, #3d0000 100%)',
                 padding: '40px 20px',
             }}
         >
@@ -255,31 +255,6 @@ const BookingDetailPage: React.FC = () => {
                         />
                     )}
 
-                    {/* ACTION BUTTONS */}
-                    <Space>
-                        <Button
-                            type="primary"
-                            icon={<PrinterOutlined />}
-                            onClick={() => navigate(`/you/tickets/detail/${booking.id}`)}
-                            style={{
-                                background: '#e63946',
-                                border: 'none',
-                                fontWeight: 600,
-                            }}
-                        >
-                            View Tickets
-                        </Button>
-                        <Button
-                            icon={<DownloadOutlined />}
-                            style={{
-                                background: 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.12)',
-                                color: '#fff',
-                            }}
-                        >
-                            Download Invoice
-                        </Button>
-                    </Space>
                 </Card>
 
                 {/* BOOKING INFO */}
@@ -322,7 +297,7 @@ const BookingDetailPage: React.FC = () => {
                                     fontSize: 16,
                                 }}
                             >
-                                ${formatPrice(booking.totalAmount)}
+                                {formatPrice(booking.totalAmount)} VND
                             </span>
                         </Descriptions.Item>
                         <Descriptions.Item
@@ -440,7 +415,7 @@ const BookingDetailPage: React.FC = () => {
                                                 color: '#10b981',
                                             }}
                                         >
-                                            ${formatPrice(price)}
+                                            ${formatPrice(price)} VND
                                         </span>
                                     ),
                                 },

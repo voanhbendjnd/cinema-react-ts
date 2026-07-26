@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Input, Button, Space, Tag, Empty, Spin, Pagination } from 'antd';
+import { Table, Card, Input, Button, Space, Tag, Empty, Spin, Pagination, Select } from 'antd';
 import { SearchOutlined, ReloadOutlined, EyeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '@/services/axiosClient';
 import dayjs from 'dayjs';
+
+const { Option } = Select;
 
 interface PublishBookingDTO {
     id: number;
@@ -38,6 +40,9 @@ interface ApiResponse {
     data: ResultPaginationDTO;
 }
 
+// Mirrors the backend BookingStatus enum used in the status filter / status tag
+const BOOKING_STATUSES = ['SUCCESS', 'PENDING', 'FAILED', 'CANCELLED'] as const;
+
 // ✅ Helper function
 const formatPrice = (price: number | undefined): string => {
     if (!price || typeof price !== 'number') {
@@ -55,13 +60,15 @@ const BookingListPage: React.FC = () => {
     const [bookings, setBookings] = useState<PublishBookingDTO[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState('');
+    // ✅ Matches the backend's optional `status` query param (BookingStatus enum, or undefined = all)
+    const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
         total: 0,
     });
 
-    const fetchBookings = async (page = 1, pageSize = 10, query = '') => {
+    const fetchBookings = async (page = 1, pageSize = 10, query = '', status?: string) => {
         try {
             setLoading(true);
             const res = await axiosClient.get<ApiResponse>('/api/v1/bookings/publish', {
@@ -70,6 +77,9 @@ const BookingListPage: React.FC = () => {
                     page: page - 1,
                     size: pageSize,
                     sort: 'createdDate,desc',
+                    // Only send `status` when a specific one is picked — omitting it
+                    // entirely keeps the backend's `required = false` filter as "all statuses".
+                    ...(status ? { status } : {}),
                 },
             });
 
@@ -94,16 +104,23 @@ const BookingListPage: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchBookings(1, 10, '');
+        fetchBookings(1, 10, '', undefined);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSearch = () => {
-        fetchBookings(1, 10, searchText);
+        fetchBookings(1, pagination.pageSize, searchText, statusFilter);
     };
 
     const handleReset = () => {
         setSearchText('');
-        fetchBookings(1, 10, '');
+        setStatusFilter(undefined);
+        fetchBookings(1, pagination.pageSize, '', undefined);
+    };
+
+    const handleStatusChange = (value: string | undefined) => {
+        setStatusFilter(value);
+        fetchBookings(1, pagination.pageSize, searchText, value);
     };
 
     const getStatusColor = (status: string) => {
@@ -111,6 +128,7 @@ const BookingListPage: React.FC = () => {
             SUCCESS: 'green',
             FAILED: 'red',
             PENDING: 'orange',
+            CANCELLED: 'yellow',
         };
         return statusMap[status] || 'default';
     };
@@ -269,7 +287,7 @@ const BookingListPage: React.FC = () => {
                 >
                     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                         <Input
-                            placeholder="Search booking code..."
+                            placeholder="Search by booking code, phone, or ID card..."
                             prefix={<SearchOutlined />}
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
@@ -284,6 +302,23 @@ const BookingListPage: React.FC = () => {
                             }}
                             allowClear
                         />
+                        <Select
+                            placeholder="All statuses"
+                            value={statusFilter}
+                            onChange={handleStatusChange}
+                            allowClear
+                            onClear={() => handleStatusChange(undefined)}
+                            style={{ minWidth: 170 }}
+                            dropdownStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)' }}
+                        >
+                            {BOOKING_STATUSES.map((status) => (
+                                <Option key={status} value={status}>
+                                    <Tag color={getStatusColor(status)} style={{ marginRight: 0 }}>
+                                        {status}
+                                    </Tag>
+                                </Option>
+                            ))}
+                        </Select>
                         <Button
                             type="primary"
                             onClick={handleSearch}
@@ -346,11 +381,11 @@ const BookingListPage: React.FC = () => {
                                         total={pagination.total}
                                         pageSize={pagination.pageSize}
                                         onChange={(page) =>
-                                            fetchBookings(page, pagination.pageSize, searchText)
+                                            fetchBookings(page, pagination.pageSize, searchText, statusFilter)
                                         }
                                         showSizeChanger
                                         onShowSizeChange={(_, pageSize) =>
-                                            fetchBookings(1, pageSize, searchText)
+                                            fetchBookings(1, pageSize, searchText, statusFilter)
                                         }
                                         pageSizeOptions={['10', '20', '50']}
                                         showTotal={(total) => `Total ${total} bookings`}
