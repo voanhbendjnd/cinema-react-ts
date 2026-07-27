@@ -12,6 +12,8 @@
   "dependencies": {
     "@ant-design/icons": "^6.2.5",
     "@ant-design/pro-components": "^2.8.10",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@stomp/stompjs": "^7.3.0",
     "antd": "^5.29.3",
     "antd-img-crop": "^4.30.0",
@@ -22,6 +24,7 @@
     "react-router-dom": "^7.17.0",
     "recharts": "^3.9.2",
     "slugify": "^1.6.9",
+    "three": "^0.185.1",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.1",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",

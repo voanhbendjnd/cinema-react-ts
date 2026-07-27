@@ -29,6 +29,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "@/store/useAuthStore.ts";
 import VoucherSelector, {type VoucherCursorResult, type VoucherItem} from './voucher.selector';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Text } from '@react-three/drei';
+import * as THREE from 'three';
 // ✅ Hardcode tên thứ/tháng tiếng Anh, không phụ thuộc dayjs locale
 // (tránh bị locale global của app đổi thành ngôn ngữ khác, vd 周日)
 const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -110,6 +113,144 @@ const buildDateRange = (): Dayjs[] => {
 // ─────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────
+// 3D SEAT COMPONENTS
+// ─────────────────────────────────────────────────────────────
+
+const calculate3DPosition = (seatRow: string, seatNo: number, totalColumns: number): [number, number, number] => {
+    const rowIndex = seatRow.toUpperCase().charCodeAt(0) - 65; // 'A' is 65
+    const colIndex = seatNo - 1;
+    const centerColumn = (totalColumns - 1) / 2.0;
+    const x = (colIndex - centerColumn) * 0.8;
+    const y = rowIndex * 0.3;
+    const z = 5.0 + (rowIndex * 1.1);
+    return [x, y, -z]; // Invert Z to face camera from front
+};
+
+interface Seat3DProps {
+    seat: SeatLayoutDTO;
+    isSelected: boolean;
+    isSold: boolean;
+    isMaintenance: boolean;
+    isPairMaintenance: boolean;
+    seatColor: string;
+    totalColumns: number;
+    onClick: () => void;
+}
+
+const Seat3D: React.FC<Seat3DProps> = ({ seat, isSelected, isSold, isMaintenance, isPairMaintenance, seatColor, totalColumns, onClick }) => {
+    const isUnavailable = isSold || isMaintenance || isPairMaintenance;
+    const position = calculate3DPosition(seat.seatRow, seat.seatNo, totalColumns);
+    const [hovered, setHovered] = useState(false);
+    
+    let color = new THREE.Color(0x333333);
+    if (isSelected) color = new THREE.Color(seatColor);
+    else if (isMaintenance || isPairMaintenance) color = new THREE.Color('#ff4d4f').lerp(new THREE.Color(0x000000), 0.5);
+    else if (isSold) color = new THREE.Color(0x555555);
+    else color = new THREE.Color(seatColor).lerp(new THREE.Color(0x000000), 0.6); 
+    
+    if (hovered && !isUnavailable && !isSelected) {
+        color = new THREE.Color(seatColor).lerp(new THREE.Color(0xffffff), 0.2);
+    }
+    
+    return (
+        <group position={position}>
+            <mesh 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isUnavailable) onClick();
+                }}
+                onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = isUnavailable ? 'not-allowed' : 'pointer'; }}
+                onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
+            >
+                {seat.type === 'SWEETBOX' ? (
+                    <boxGeometry args={[0.7, 0.4, 0.6]} />
+                ) : (
+                    <boxGeometry args={[0.6, 0.4, 0.6]} />
+                )}
+                <meshStandardMaterial 
+                    color={color} 
+                    transparent 
+                    opacity={isSold ? 0.3 : (isMaintenance || isPairMaintenance ? 0.5 : 1)} 
+                    roughness={0.7} 
+                    metalness={0.2}
+                />
+            </mesh>
+            <Text
+                position={[0, 0.21, 0]}
+                rotation={[-Math.PI / 2, 0, 0]}
+                fontSize={0.15}
+                color={isSelected ? "white" : (isUnavailable ? "#999" : "white")}
+                anchorX="center"
+                anchorY="middle"
+            >
+                {seat.seatRow}{seat.seatNo}
+            </Text>
+        </group>
+    );
+};
+
+const SeatMap3D: React.FC<{
+    seats: SeatLayoutDTO[];
+    selectedSeats: number[];
+    handleSeatClick: (seat: SeatLayoutDTO) => void;
+    findPairSeat: (seat: SeatLayoutDTO) => SeatLayoutDTO | null;
+}> = ({ seats, selectedSeats, handleSeatClick, findPairSeat }) => {
+    const maxSeatNo = Math.max(...seats.map(s => s.seatNo), 1);
+    
+    return (
+        <div style={{ width: '100%', height: 400, background: 'rgba(0,0,0,0.3)', borderRadius: 8, overflow: 'hidden', position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Canvas camera={{ position: [0, 8, 12], fov: 50 }}>
+                <ambientLight intensity={0.6} />
+                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <pointLight position={[0, -2, -5]} intensity={0.5} color="lightblue" />
+                
+                {/* Screen */}
+                <mesh position={[0, 1, -12]}>
+                    <boxGeometry args={[maxSeatNo * 0.8 + 4, 4, 0.2]} />
+                    <meshStandardMaterial color="#222" emissive="#111" />
+                </mesh>
+                <Text position={[0, 1, -11.8]} fontSize={1.5} color="rgba(255,255,255,0.2)" letterSpacing={0.2}>
+                    SCREEN
+                </Text>
+
+                {/* Seats */}
+                {seats.map(seat => {
+                    const isSelected = selectedSeats.includes(seat.id);
+                    const isSold = seat.bookingStatus === 'SOLD';
+                    const isMaintenance = seat.status === 'MAINTENANCE';
+                    const pairSeat = findPairSeat(seat);
+                    const isPairMaintenance = pairSeat?.status === 'MAINTENANCE';
+                    const isAvailable = seat.bookingStatus === 'AVAILABLE' && !isMaintenance && !isPairMaintenance;
+                    const seatConfig = SEAT_TYPE_CONFIG[seat.type] || SEAT_TYPE_CONFIG.STANDARD;
+                    
+                    return (
+                        <Seat3D 
+                            key={seat.id}
+                            seat={seat}
+                            isSelected={isSelected}
+                            isSold={isSold}
+                            isMaintenance={isMaintenance}
+                            isPairMaintenance={isPairMaintenance || false}
+                            seatColor={seatConfig.color}
+                            totalColumns={maxSeatNo}
+                            onClick={() => {
+                                if (isAvailable || isSelected) {
+                                    handleSeatClick(seat);
+                                }
+                            }}
+                        />
+                    );
+                })}
+                <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} maxDistance={30} minDistance={2} target={[0, 2, -5]} />
+            </Canvas>
+            <div style={{ position: 'absolute', bottom: 12, left: 12, color: 'rgba(255,255,255,0.5)', fontSize: 11, pointerEvents: 'none', background: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: 4 }}>
+                Drag to rotate • Scroll to zoom
+            </div>
+        </div>
+    );
+};
+
+// ─────────────────────────────────────────────────────────────
 // SEAT GRID COMPONENT
 // ─────────────────────────────────────────────────────────────
 
@@ -120,6 +261,8 @@ const SeatGrid: React.FC<{
     loading?: boolean;
     onValidationError?: (message: string) => void;
 }> = ({ seats, selectedSeats, onSelectSeats, loading, onValidationError }) => {
+    const [is3DMode, setIs3DMode] = useState(false);
+    
     const groupedByRow = useMemo(() => {
         const groups: Record<string, SeatLayoutDTO[]> = {};
         seats.forEach((seat) => {
@@ -240,26 +383,40 @@ const SeatGrid: React.FC<{
 
     return (
         <div style={{ marginBottom: 20 }}>
-            {/* SCREEN */}
-            <div
-                style={{
-                    textAlign: 'center',
-                    marginBottom: 30,
-                    padding: '12px 0',
-                    background: 'rgba(0,0,0,0.3)',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
-                    color: 'rgba(255,255,255,0.5)',
-                    fontWeight: 600,
-                    border: '1px solid rgba(255,255,255,0.1)',
-                }}
-            >
-                ◆ SCREEN ◆
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+                <Button 
+                    size="small" 
+                    type={is3DMode ? 'primary' : 'default'} 
+                    onClick={() => setIs3DMode(!is3DMode)}
+                    style={{ background: is3DMode ? '#e63946' : 'transparent', borderColor: is3DMode ? '#e63946' : 'rgba(255,255,255,0.2)', color: is3DMode ? '#fff' : 'rgba(255,255,255,0.6)' }}
+                >
+                    {is3DMode ? 'View 2D' : 'View 3D (Beta)'}
+                </Button>
             </div>
+            {is3DMode ? (
+                <SeatMap3D seats={seats} selectedSeats={selectedSeats} handleSeatClick={handleSeatClick} findPairSeat={findPairSeat} />
+            ) : (
+                <>
+                    {/* SCREEN */}
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            marginBottom: 30,
+                            padding: '12px 0',
+                            background: 'rgba(0,0,0,0.3)',
+                            borderRadius: 8,
+                            fontSize: 12,
+                            letterSpacing: 1.5,
+                            color: 'rgba(255,255,255,0.5)',
+                            fontWeight: 600,
+                            border: '1px solid rgba(255,255,255,0.1)',
+                        }}
+                    >
+                        ◆ SCREEN ◆
+                    </div>
 
-            {/* SEAT ROWS */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {/* SEAT ROWS */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {Object.entries(groupedByRow).map(([row, rowSeats]) => (
                     <div key={row} style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
                         <span
@@ -397,6 +554,8 @@ const SeatGrid: React.FC<{
                     </div>
                 ))}
             </div>
+                </>
+            )}
 
             {/* LEGEND */}
             <div
@@ -790,9 +949,9 @@ export const BookingModal: React.FC<{
             const message =
                 error?.response?.data?.message ||
                 error?.response?.data?.description ||
-                'Không đủ điểm hoặc đã có lỗi xảy ra. Vui lòng thử lại.';
+                'Try again!';
             api.error({
-                message: 'Đổi điểm thất bại',
+                message: 'Failure!',
                 description: message,
                 placement: 'topRight',
                 duration: 5,
@@ -1264,7 +1423,7 @@ export const BookingModal: React.FC<{
                                         color: '#f87171',
                                     }}
                                 >
-                                    ⚠ Không đủ điểm. Bạn cần {getOriginalPrice().toLocaleString('vi-VN')} điểm nhưng chỉ có {loyaltyPoints.toLocaleString('vi-VN')} điểm.
+                                    ⚠ Point not enough. You need {getOriginalPrice().toLocaleString('vi-VN')} point but your point {loyaltyPoints.toLocaleString('vi-VN')} điểm.
                                 </div>
                             )}
 
@@ -1277,8 +1436,6 @@ export const BookingModal: React.FC<{
                                     voucherHasMore={voucherHasMore}
                                     onSelectVoucher={setSelectedVoucher}
                                     onLoadMore={() => fetchVouchers(false)}
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    //@ts-expect-error
 
                                     onOpenPanel={() => {
                                         if (vouchers.length === 0 && !voucherLoading) {

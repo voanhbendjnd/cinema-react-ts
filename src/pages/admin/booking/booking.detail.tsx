@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Spin, Empty, Button, Space,Tag, Table, Alert, Descriptions } from 'antd';
-import { ArrowLeftOutlined, PrinterOutlined, DownloadOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Card, Spin, Empty, Button,Tag, Table, Alert, Descriptions } from 'antd';
+import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import axiosClient from '@/services/axiosClient';
 import dayjs from 'dayjs';
 
