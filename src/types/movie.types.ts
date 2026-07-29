@@ -108,7 +108,7 @@ export interface MovieDetails {
     id: number;
     title: string;
     description: string;
-    durationMinutes: number; // typo từ BE — giữ nguyên để map đúng
+    durationMinutes: number;
     genre: MovieGenre;
     releaseDate: string;     // ISO 8601
     posterUrl: string;

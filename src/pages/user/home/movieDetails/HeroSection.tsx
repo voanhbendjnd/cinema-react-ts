@@ -136,7 +136,7 @@ export default function HeroSection({movie, onBookNow, onWatchTrailer}: HeroSect
                                 fontSize: 13
                             }}>
                 <ClockCircleOutlined/>
-                                {movie.durationMunutes} phút
+                                {movie.durationMinutes} phút
               </span>
 
                             {/* Release date */}
