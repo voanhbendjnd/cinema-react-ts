@@ -123,7 +123,7 @@ const calculate3DPosition = (seatRow: string, seatNo: number, totalColumns: numb
     const x = (colIndex - centerColumn) * 0.8;
     const y = rowIndex * 0.3;
     const z = 5.0 + (rowIndex * 1.1);
-    return [x, y, -z]; // Invert Z to face camera from front
+    return [x, y, z];
 };
 
 interface Seat3DProps {
@@ -199,17 +199,17 @@ const SeatMap3D: React.FC<{
     
     return (
         <div style={{ width: '100%', height: 400, background: 'rgba(0,0,0,0.3)', borderRadius: 8, overflow: 'hidden', position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <Canvas camera={{ position: [0, 8, 12], fov: 50 }}>
+            <Canvas camera={{ position: [0, 10, 22], fov: 50 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[10, 10, 5]} intensity={1} />
                 <pointLight position={[0, -2, -5]} intensity={0.5} color="lightblue" />
                 
                 {/* Screen */}
-                <mesh position={[0, 1, -12]}>
+                <mesh position={[0, 1, 1]}>
                     <boxGeometry args={[maxSeatNo * 0.8 + 4, 4, 0.2]} />
                     <meshStandardMaterial color="#222" emissive="#111" />
                 </mesh>
-                <Text position={[0, 1, -11.8]} fontSize={1.5} color="rgba(255,255,255,0.2)" letterSpacing={0.2}>
+                <Text position={[0, 1, 1.2]} fontSize={1.5} color="rgba(255,255,255,0.2)" letterSpacing={0.2}>
                     SCREEN
                 </Text>
 
@@ -241,7 +241,7 @@ const SeatMap3D: React.FC<{
                         />
                     );
                 })}
-                <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} maxDistance={30} minDistance={2} target={[0, 2, -5]} />
+                <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} maxDistance={40} minDistance={2} target={[0, 2, 8]} />
             </Canvas>
             <div style={{ position: 'absolute', bottom: 12, left: 12, color: 'rgba(255,255,255,0.5)', fontSize: 11, pointerEvents: 'none', background: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: 4 }}>
                 Drag to rotate • Scroll to zoom
