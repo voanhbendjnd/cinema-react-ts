@@ -28,6 +28,7 @@ import 'dayjs/locale/en';
 import { movieService } from '@/services/movie.service';
 import type { ComplexShowtimeRequestDTO, DayScheduleDTO } from '@/types/movie.types';
 import { baseURL } from '@/services/axiosClient';
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -139,8 +140,8 @@ const MovieDetailPage: React.FC = () => {
         );
     }
 
-    const posterSrc = movie.posterUrl
-        ? `${baseURL}/api/v1/files/${movie.posterUrl}`
+    const posterSrc = movie?.posterUrl
+        ? getMoviePosterSrc(movie.posterUrl)
         : undefined;
 
     const totalShowtimes = (movie.rooms ?? []).reduce(

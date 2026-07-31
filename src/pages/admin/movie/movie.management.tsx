@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import {Button, message, Tag} from 'antd';
@@ -32,7 +32,7 @@ const MovieManagement: React.FC = () => {
     //   dataIndex: 'posterUrl',
     //   hideInSearch: true,
     //   render: (_, record) => (
-    //     record.posterUrl ? <img src={`${baseURL}/api/v1/files/${record.posterUrl}`} alt={record.title} style={{ width: 50, height: 75, objectFit: 'cover' }} /> : 'No Image'
+    //     record.posterUrl ? <img src={getMoviePosterSrc(record.posterUrl)} alt={record.title} style={{ width: 50, height: 75, objectFit: 'cover' }} /> : 'No Image'
     //   ),
     //   width: 100,
     // },

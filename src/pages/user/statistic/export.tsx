@@ -36,6 +36,7 @@ import {
 } from "@/services/statistics-export.service.ts";
 import type {TopMovieProjection} from "@/services/satistics.service.ts";
 import {baseURL} from "@/services/axiosClient.ts";
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 
 const ExportReportPage: React.FC = () => {
     const [movieData, setMovieData] = useState<OccupancyMovieDetail[]>([]);
@@ -125,7 +126,7 @@ const ExportReportPage: React.FC = () => {
                 <Image
                     src={
                         posterUrl
-                            ? `${baseURL}/api/v1/files/${posterUrl}`
+                            ? getMoviePosterSrc(posterUrl)
                             : '/placeholder.png'
                     }
                     alt={record.movieTitle}

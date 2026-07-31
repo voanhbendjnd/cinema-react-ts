@@ -18,6 +18,7 @@ export interface PublishMovieProjection {
 }
 
 const baseURL = axiosClient.defaults.baseURL ?? '';
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 
 const GENRE_COLOR: Record<string, string> = {
     ACTION: '#e63946',
@@ -62,7 +63,7 @@ const MovieCard: React.FC<{ movie: PublishMovieProjection; onBook: (id: number) 
                                                                                                   onBook,
                                                                                               }) => {
     const [hovered, setHovered] = useState(false);
-    const src = `${baseURL}/api/v1/files/${movie.posterUrl}`;
+    const src = getMoviePosterSrc(movie.posterUrl);
 
     return (
         <div

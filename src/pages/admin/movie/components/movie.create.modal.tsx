@@ -37,6 +37,7 @@ import type {
 } from '@/types/movie.types';
 import { movieService } from '@/services/movie.service';
 import { baseURL } from '@/services/axiosClient';
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
 import '@/styles/movie.admin.css';
@@ -255,7 +256,7 @@ const MovieCreateModal: React.FC<MovieCreateModalProps> = ({ open, onClose, onSu
                             >
                                 {imageUrl ? (
                                     <img
-                                        src={`${baseURL}/api/v1/files/movie-temps/${imageUrl}`}
+                                        src={getMoviePosterSrc(imageUrl)}
                                         alt="poster"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />

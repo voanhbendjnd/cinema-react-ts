@@ -4,6 +4,7 @@ import type {MovieDetails, MovieStatus} from "@/types/movie.types.ts";
 import {colors} from "@/styles/theme.ts";
 import dayjs from "dayjs";
 import {baseURL} from "@/services/axiosClient.ts";
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 import {useDominantColor} from "@/utils/use.dominant.color.ts";
 import 'dayjs/locale/en';
 
@@ -38,7 +39,7 @@ export default function HeroSection({movie, onBookNow, onWatchTrailer}: HeroSect
     const releaseYear = movie.releaseDate ? dayjs(movie.releaseDate).format("DD/MM/YYYY") : "";
 
     // Poster luôn đi qua baseURL, dùng chung 1 nguồn cho cả nền và ảnh chính
-    const posterSrc = `${baseURL}/api/v1/files/${movie.posterUrl}`;
+    const posterSrc = getMoviePosterSrc(movie.posterUrl);
 
     // Màu chủ đạo tách từ chính poster -> nền hero sẽ "mang màu" của phim
     const dominantColor = useDominantColor(posterSrc, colors.background);

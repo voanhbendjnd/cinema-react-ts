@@ -23,6 +23,7 @@ import {
 import { useTopMoviesFilter } from '@/hooks/use-top-movies-filter';
 import {statisticsService, type TopMovieProjection} from "@/services/satistics.service.ts";
 import {baseURL} from "@/services/axiosClient.ts";
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 
 const TopMoviesPage: React.FC = () => {
     const [movies, setMovies] = useState<TopMovieProjection[]>([]);
@@ -100,8 +101,8 @@ const TopMoviesPage: React.FC = () => {
                 <Image
                     src={
                         posterUrl
-                            ? `${baseURL}/api/v1/files/${posterUrl}`
-                            : '/placeholder.png'
+                            ? getMoviePosterSrc(posterUrl)
+                            : 'https://via.placeholder.com/150'
                     }
                     alt={record.movieTitle}
                     width={80}

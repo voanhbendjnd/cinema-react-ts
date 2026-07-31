@@ -41,6 +41,7 @@ import type {
 import 'dayjs/locale/en';
 import { movieService } from '@/services/movie.service';
 import { baseURL } from '@/services/axiosClient';
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
 import '@/styles/movie.admin.css';
@@ -324,10 +325,10 @@ const MovieUpdateModal: React.FC<MovieUpdateModalProps> = ({ open, movie, onClos
     };
 
     // ── Poster preview src ──
-    const posterSrc = newPosterUrl
-        ? `${baseURL}/api/v1/files/movie-temps/${newPosterUrl}`
+    const displayPoster = newPosterUrl
+        ? getMoviePosterSrc(newPosterUrl)
         : currentMovie?.posterUrl
-            ? `${baseURL}/api/v1/files/${currentMovie.posterUrl}`
+            ? getMoviePosterSrc(currentMovie.posterUrl)
             : undefined;
     const isLocked = currentStatus !== MovieStatus.UPCOMING;
     // ── Step 0: Movie info form ──
@@ -417,9 +418,9 @@ const MovieUpdateModal: React.FC<MovieUpdateModalProps> = ({ open, movie, onClos
                             onChange={handleUploadChange}
                             accept=".png,.jpeg,.jpg,.webp"
                         >
-                            {posterSrc ? (
+                            {displayPoster ? (
                                 <img
-                                    src={posterSrc}
+                                    src={displayPoster}
                                     alt="poster"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
@@ -537,9 +538,9 @@ const MovieUpdateModal: React.FC<MovieUpdateModalProps> = ({ open, movie, onClos
             0
         );
         const posterPreview = newPosterUrl
-            ? `${baseURL}/api/v1/files/movie-temps/${newPosterUrl}`
+            ? getMoviePosterSrc(newPosterUrl)
             : currentMovie?.posterUrl
-                ? `${baseURL}/api/v1/files/${currentMovie.posterUrl}`
+                ? getMoviePosterSrc(currentMovie.posterUrl)
                 : undefined;
 
         return (

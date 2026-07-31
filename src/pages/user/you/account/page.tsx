@@ -32,7 +32,8 @@ import {
     CloseOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import axiosClient, {baseURL} from '@/services/axiosClient.ts';
+import axiosClient, { baseURL } from '@/services/axiosClient.ts';
+import { getMoviePosterSrc } from '@/utils/moviePoster';
 
 const { Title, Text } = Typography;
 
@@ -200,7 +201,7 @@ const AccountInfoPage: React.FC = () => {
     const avatarSrc = avatarPreview
         ? avatarPreview
         : info.avatarUrl
-            ? `${baseURL}/api/v1/files/${info.avatarUrl}`
+            ? getMoviePosterSrc(info.avatarUrl)
             : undefined;
 
     // ── Avatar upload ──
