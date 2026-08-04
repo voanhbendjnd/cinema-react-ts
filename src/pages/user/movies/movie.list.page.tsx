@@ -58,7 +58,9 @@ const ListMovieCard: React.FC<{ movie: PublishMovieProjection }> = ({ movie }) =
     const src = getMoviePosterSrc(movie.posterUrl);
 
     const goToDetail = () => {
-        navigate(`/movies/${generateMovieSlug(movie.title, movie.id)}`);
+        // [2026-07-20] Fix: generateMovieSlug trả về full path /movies/id-slug
+        // không wrap thêm /movies/ để tránh URL bị double: /movies//movies/...
+        navigate(generateMovieSlug(movie.title, movie.id));
     };
 
     return (

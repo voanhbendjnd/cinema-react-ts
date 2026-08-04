@@ -209,7 +209,12 @@ const AdminLayout: React.FC = () => {
                     name: 'Refund',
                     icon: <UndoOutlined />,
                     description: 'Process refunds',
-                }
+                },
+                {
+                    path: `/${roleName}/tickets`,
+                    name: 'Ticket Management',
+                    icon: <ScanOutlined />,
+                },
             );
         }
 

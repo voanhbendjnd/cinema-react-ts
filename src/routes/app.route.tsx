@@ -36,6 +36,7 @@ import StatisticDashboard from "@/pages/user/statistic/statistic.dashboard.tsx";
 import TopMoviesPage from "@/pages/user/statistic/top.movies.tsx";
 import RefundPage from "@/pages/admin/refund/page.tsx";
 import ExportReportPage from "@/pages/user/statistic/export.tsx";
+import TicketManagementPage from '@/pages/admin/ticket-management';
 
 const AppRoutes: React.FC = () => {
     const { isAuthenticated, role } = useAuthStore();
@@ -80,6 +81,7 @@ const AppRoutes: React.FC = () => {
                     <Route path="/admin/showtime/price" element={<ShowtimePriceManagement />} />
                     <Route path="/admin/promotions" element={<PromotionManagement />} />
 
+                    <Route path="/admin/booking" element={<POSBookingPage />} />
 
                     <Route path="/admin/rooms" element={<RoomManagement />} />
                     <Route path="/admin/movies/:id" element={<MovieDetailPage />} />
@@ -91,6 +93,8 @@ const AppRoutes: React.FC = () => {
                     <Route path="/admin/statistics/movies" element={<TopMoviesPage />} />
                     <Route path="/admin/refund" element={<RefundPage />} />
                     <Route path="/admin/statistics/occupancy/preview" element={<ExportReportPage />} />
+                    <Route path="/admin/tickets" element={<TicketManagementPage />} />
+
 
 
 
@@ -114,6 +118,7 @@ const AppRoutes: React.FC = () => {
                     <Route path="/manager/statistics/movies" element={<TopMoviesPage />} />
                     <Route path="/manager/refund" element={<RefundPage />} />
                     <Route path="/manager/statistics/occupancy/preview" element={<ExportReportPage />} />
+                    <Route path="/manager/tickets" element={<TicketManagementPage />} />
 
 
                 </Route>
@@ -122,11 +127,12 @@ const AppRoutes: React.FC = () => {
             {/* Shared POS booking and ticket lookup routes for Admin, Manager, and Staff */}
             <Route element={<ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF']} />}>
                 <Route element={<AdminLayout />}>
-                    <Route path="/admin/booking" element={<POSBookingPage />} />
-                    <Route path="/manager/booking" element={<POSBookingPage />} />
+                    <Route path="/staff/booking" element={<POSBookingPage />} />
+                    <Route path="/staff/booking" element={<POSBookingPage />} />
                     <Route path="/staff/booking" element={<POSBookingPage />} />
                     <Route path="/staff/ticket-lookup" element={<TicketLookup />} />
                     <Route path="/staff/refund" element={<RefundPage />} />
+                    <Route path="/staff/tickets" element={<TicketManagementPage />} />
 
                 </Route>
             </Route>
@@ -136,7 +142,7 @@ const AppRoutes: React.FC = () => {
 
                 <Route path="/" element={<HomePage />} />
                 <Route path="/movies" element={<MovieListPage />} />
-                <Route path="/vouchers" element={<VoucherListPage/>}/>
+                <Route path="/vouchers" element={<VoucherListPage />} />
                 <Route
                     path="/movies/:slug"
                     element={<MovieDetail />}

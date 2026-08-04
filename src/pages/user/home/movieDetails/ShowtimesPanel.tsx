@@ -4,6 +4,10 @@ import type { ShowTimeResponse, RoomType } from "@/types/movie.types.ts";
 import { colors } from "@/styles/theme.ts";
 import dayjs from "dayjs";
 
+// ✅ Hardcode tên tháng/thứ tiếng Anh, không phụ thuộc vào dayjs locale toàn cục
+const MONTH_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 interface ShowtimesPanelProps {
     showtimes: ShowTimeResponse[];
     onSelectSeats?: (showtime: ShowTimeResponse) => void;
@@ -27,7 +31,8 @@ function formatTime(iso: string) {
 }
 
 function formatDateLabel(iso: string) {
-    return { month: dayjs(iso).format("MMM").toUpperCase(), day: dayjs(iso).date() };
+    const d = dayjs(iso);
+    return { month: MONTH_SHORT[d.month()], day: d.date(), weekday: WEEKDAY_SHORT[d.day()] };
 }
 
 
@@ -104,25 +109,26 @@ export default function ShowtimesPanel({ showtimes, onSelectSeats }: ShowtimesPa
             {/* ── Date Selector ──────────────────────────────── */}
             <div style={{ display: "flex", flexWrap: "wrap" ,gap: 12, overflowX: "auto", paddingBottom: 8 }}>
                 {dateKeys.map((key) => {
-                    const { month, day } = formatDateLabel(key);
+                    const { month, day, weekday } = formatDateLabel(key);
                     const active = key === selectedDateKey;
                     return (
                         <button
                             key={key}
                             onClick={() => { setSelectedDateKey(key); setSelectedId(null); }}
                             style={{
-                                flexShrink: 0, width: 64, height: 80, borderRadius: 12,
+                                flexShrink: 0, width: 64, height: 84, borderRadius: 12,
                                 border: active ? "none" : `1px solid ${colors.outlineVariant}`,
                                 backgroundColor: active ? colors.primary : "transparent",
                                 color: active ? colors.onPrimary : colors.onSurface,
                                 fontWeight: 700, cursor: "pointer",
-                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2,
+                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1,
                                 boxShadow: active ? `0 4px 16px ${colors.statusGoldGlow}` : "none",
-                                transition: "border-color 0.2s",
+                                transition: "all 0.2s",
                             }}
                         >
-                            <span style={{ fontSize: 11, letterSpacing: "0.05em" }}>{month}</span>
-                            <span style={{ fontSize: 24, lineHeight: "32px" }}>{day}</span>
+                            <span style={{ fontSize: 9, letterSpacing: "0.08em", opacity: 0.8 }}>{weekday.toUpperCase()}</span>
+                            <span style={{ fontSize: 22, lineHeight: "28px" }}>{day}</span>
+                            <span style={{ fontSize: 10, letterSpacing: "0.05em" }}>{month}</span>
                         </button>
                     );
                 })}

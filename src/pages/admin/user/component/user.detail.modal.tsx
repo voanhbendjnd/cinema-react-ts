@@ -18,6 +18,7 @@ const { Text, Title } = Typography;
 interface UserDetailModalProps {
     open: boolean;
     userId: number | null;
+    isCustomer?: boolean;
     onClose: () => void;
 }
 
@@ -51,7 +52,7 @@ const getInitials = (name?: string): string => {
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 };
 
-const UserDetailModal: React.FC<UserDetailModalProps> = ({ open, userId, onClose }) => {
+const UserDetailModal: React.FC<UserDetailModalProps> = ({ open, userId, isCustomer, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<UserDTO | null>(null);
 
@@ -64,8 +65,13 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ open, userId, onClose
         const load = async () => {
             setLoading(true);
             try {
-                const res = await userService.getUserById(userId);
-                setUser(res.data as unknown as UserDTO);
+                if (isCustomer) {
+                    const res = await userService.getCustomerById(userId);
+                    setUser(res.data as unknown as any); // using any because we appended fields
+                } else {
+                    const res = await userService.getUserById(userId);
+                    setUser(res.data as unknown as UserDTO);
+                }
             } catch (error) {
                 setUser(null);
             } finally {
@@ -166,6 +172,38 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ open, userId, onClose
                             >
                                 {user?.phone || '—'}
                             </Descriptions.Item>
+                            
+                            {isCustomer && (
+                                <>
+                                    <Descriptions.Item
+                                        label={
+                                            <Space size={6}>
+                                                <IdcardOutlined /> ID Card
+                                            </Space>
+                                        }
+                                    >
+                                        {(user as any)?.identityCard || '—'}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item
+                                        label={
+                                            <Space size={6}>
+                                                <IdcardOutlined /> Address
+                                            </Space>
+                                        }
+                                    >
+                                        {(user as any)?.address || '—'}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item
+                                        label={
+                                            <Space size={6}>
+                                                <IdcardOutlined /> Loyalty Points
+                                            </Space>
+                                        }
+                                    >
+                                        <Tag color="gold">{(user as any)?.loyaltyPoints || 0} pts</Tag>
+                                    </Descriptions.Item>
+                                </>
+                            )}
                         </Descriptions>
 
                         <Divider style={{ margin: '20px 0' }} />

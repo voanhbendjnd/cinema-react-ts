@@ -13,7 +13,7 @@ interface HeroSectionProps {
     onBookNow?: () => void;
     onWatchTrailer?: () => void;
 }
-// ta ta ta
+
 // Label hiển thị cho genre và status
 const GENRE_LABELS: Record<string, string> = {
     ACTION: "ACTION", COMEDY: "COMEDY", DRAMA: "DRAMA",

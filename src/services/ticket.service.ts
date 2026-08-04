@@ -1,5 +1,5 @@
 import axiosClient from '@/services/axiosClient';
-import type { CustomerTicket, TicketListQuery } from '@/types/ticket.types';
+import type { AdminTicketListQuery, CustomerTicket, TicketListQuery } from '@/types/ticket.types';
 
 interface PublishedMovie {
   id: number;
@@ -50,6 +50,35 @@ export const ticketService = {
 
     return response as unknown as IBackendRes<IModelPaginate<CustomerTicket>>;
   },
+
+  getAdminTickets: async ({
+    page = 0,
+    size = 10,
+    sort = 'createdDate,desc',
+    q,
+    seatType,
+    paymentMethod,
+    bookingStatus,
+    releaseDate,
+  }: AdminTicketListQuery = {}) => {
+    const params = Object.fromEntries(
+      Object.entries({
+        page,
+        size,
+        sort,
+        q,
+        seatType,
+        paymentMethod,
+        bookingStatus,
+        releaseDate,
+      }).filter(([, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const response = await axiosClient.get('/api/v1/admin/tickets', { params });
+
+    return response as unknown as IBackendRes<IModelPaginate<CustomerTicket>>;
+  },
+
   exchangeTicketToPoints: (ticketId: number) =>
       axiosClient.post(`/api/v1/bookings/ticket/${ticketId}/exchange-to-points`),
 

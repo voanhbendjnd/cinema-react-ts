@@ -1,4 +1,4 @@
-﻿import React, {useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {type ActionType, type ProColumns, ProTable } from '@ant-design/pro-components';
 import {notification, Popconfirm, Space} from 'antd';
 import { userService } from '@/services/user.service.ts';
@@ -208,6 +208,7 @@ const CustomerManagement: React.FC = () => {
             <UserDetailModal
                 open={detailOpen}
                 userId={selectedUserId}
+                isCustomer={true}
                 onClose={() => {
                     setDetailOpen(false);
                     setSelectedUserId(null);

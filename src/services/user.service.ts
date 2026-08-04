@@ -20,6 +20,9 @@ export const userService = {
   getUserById: (id: number) => {
     return axiosClient.get<UserDTO>(`/api/v1/admin/users/${id}`);
   },
+  getCustomerById: (id: number) => {
+    return axiosClient.get<any>(`/api/v1/admin/customers/${id}`);
+  },
   getCustomers: async (params: { current?: number; pageSize?: number; q?: string }): Promise<IBackendRes<IModelPaginate<IAccount>>> => {
     const page = params.current ? params.current - 1 : 0; // Spring boot page is 0-indexed
     const size = params.pageSize || 10;

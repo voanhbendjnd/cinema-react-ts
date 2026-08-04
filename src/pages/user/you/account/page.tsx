@@ -13,6 +13,7 @@ import {
     Input,
     Select,
     Space,
+    Table,
 } from 'antd';
 import type { UploadProps, UploadRequestOption } from 'rc-upload/lib/interface';
 import ImgCrop from 'antd-img-crop';
@@ -53,6 +54,15 @@ interface AccountInfo {
     lastModifiedDate: string;
     createdBy: string;
     lastModifiedBy: string;
+}
+
+interface PointHistory {
+    id: number;
+    customerId: number;
+    amountPoints: number;
+    type: 'EARN' | 'SPEND';
+    description: string;
+    createdDate: string;
 }
 
 const GENDER_LABEL: Record<string, string> = {
@@ -138,6 +148,7 @@ const cardEditBtnStyle = (active: boolean): React.CSSProperties => ({
 
 const AccountInfoPage: React.FC = () => {
     const [info, setInfo] = useState<AccountInfo | null>(null);
+    const [pointHistory, setPointHistory] = useState<PointHistory[]>([]);
     const [loading, setLoading] = useState(true);
     const [avatarUploading, setAvatarUploading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -176,8 +187,18 @@ const AccountInfoPage: React.FC = () => {
             }));
     };
 
+    const fetchPointHistory = () => {
+        return axiosClient
+            .get<PointHistory[]>('/api/v1/account/point-history')
+            .then((res) => {
+                const data = res?.data ?? res;
+                setPointHistory(data as unknown as PointHistory[]);
+            })
+            .catch(() => {});
+    };
+
     useEffect(() => {
-        fetchInfo().finally(() => setLoading(false));
+        Promise.all([fetchInfo(), fetchPointHistory()]).finally(() => setLoading(false));
     }, []);
 
     if (loading) {
@@ -801,6 +822,59 @@ const AccountInfoPage: React.FC = () => {
                             {/*<InfoRow icon={<CalendarOutlined />} label="Last modified at" value={lastUpdate} />*/}
                         </Card>
                     </div>
+                    
+                    {/* ── Point History Table ── */}
+                    <div style={{ marginTop: 24 }}>
+                        <Card
+                            title={
+                                <span style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2, fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
+                                    POINT HISTORY
+                                </span>
+                            }
+                            styles={{
+                                header: { background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.07)', minHeight: 44 },
+                                body: { padding: '16px' },
+                            }}
+                            style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10 }}
+                        >
+                            <Table
+                                dataSource={pointHistory}
+                                rowKey="id"
+                                pagination={{ pageSize: 5 }}
+                                className="dark-table"
+                                columns={[
+                                    {
+                                        title: 'Date',
+                                        dataIndex: 'createdDate',
+                                        render: (date) => <Text style={{ color: '#f0ece3' }}>{dayjs(date).format('DD/MM/YYYY HH:mm')}</Text>,
+                                    },
+                                    {
+                                        title: 'Type',
+                                        dataIndex: 'type',
+                                        render: (type) => (
+                                            <Tag color={type === 'EARN' ? 'success' : 'error'}>
+                                                {type}
+                                            </Tag>
+                                        ),
+                                    },
+                                    {
+                                        title: 'Points',
+                                        dataIndex: 'amountPoints',
+                                        render: (points, record) => (
+                                            <Text style={{ color: record.type === 'EARN' ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                                                {record.type === 'EARN' ? '+' : '-'}{points}
+                                            </Text>
+                                        ),
+                                    },
+                                    {
+                                        title: 'Description',
+                                        dataIndex: 'description',
+                                        render: (desc) => <Text style={{ color: 'rgba(255,255,255,0.6)' }}>{desc}</Text>,
+                                    },
+                                ]}
+                            />
+                        </Card>
+                    </div>
 
                     {/* ── Actions ── */}
                     <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
@@ -910,6 +984,28 @@ const AccountInfoPage: React.FC = () => {
                 }
                 .ant-form-item-explain-error {
                     font-size: 12px;
+                }
+                .dark-table .ant-table {
+                    background: transparent;
+                    color: #f0ece3;
+                }
+                .dark-table .ant-table-thead > tr > th {
+                    background: rgba(255,255,255,0.04);
+                    color: rgba(255,255,255,0.8);
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
+                }
+                .dark-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid rgba(255,255,255,0.04);
+                }
+                .dark-table .ant-table-tbody > tr.ant-table-row:hover > td {
+                    background: rgba(255,255,255,0.08);
+                }
+                .dark-table .ant-pagination-item a {
+                    color: #f0ece3;
+                }
+                .dark-table .ant-pagination-item-active {
+                    background: #e63946;
+                    border-color: #e63946;
                 }
             `}</style>
         </>

@@ -10,6 +10,7 @@ import ShowtimesPanel from "@/pages/user/home/movieDetails/ShowtimesPanel";
 import { colors } from "@/styles/theme.ts";
 import {extractMovieId} from "@/utils/generate.slug.ts";
 import 'dayjs/locale/en';
+import { BookingModal } from "@/pages/user/booking/booking.modal";
 
 // ── Lấy màu trung bình của poster để làm nền trang ─────────
 function useDominantColor(imageUrl?: string | null) {
@@ -76,6 +77,7 @@ export default function MovieDetailPage() {
     const [movie, setMovie] = useState<MovieDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [bookingOpen, setBookingOpen] = useState(false);
 
     const { slug } = useParams();
     const movieId = extractMovieId(slug ?? "");
@@ -156,7 +158,7 @@ export default function MovieDetailPage() {
         >
             <HeroSection
                 movie={movie}
-                onBookNow={() => console.log("Book Now clicked")}
+                onBookNow={() => setBookingOpen(true)}
                 onWatchTrailer={() => console.log("Watch Trailer clicked")}
             />
 
@@ -182,12 +184,17 @@ export default function MovieDetailPage() {
                     {/* Right */}
                     <ShowtimesPanel
                         showtimes={movie.showtimes}
-                        onSelectSeats={(showtime) =>
-                            console.log("Selected showtime:", showtime)
-                        }
+                        onSelectSeats={() => setBookingOpen(true)}
                     />
                 </div>
             </section>
+
+            {/* Booking Modal */}
+            <BookingModal
+                movieId={bookingOpen ? (movieId ?? null) : null}
+                movieTitle={movie.title}
+                onClose={() => setBookingOpen(false)}
+            />
         </main>
     );
 }
