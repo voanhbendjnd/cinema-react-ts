@@ -36,7 +36,6 @@ import type {
     RoomNameProjection,
 } from '@/types/movie.types';
 import { movieService } from '@/services/movie.service';
-import { baseURL } from '@/services/axiosClient';
 import { getMoviePosterSrc } from '@/utils/moviePoster';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';

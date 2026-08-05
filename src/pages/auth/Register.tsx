@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import {Form, Input, Button, Typography, Select, notification} from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import {Form, Input, Button, Typography, Select, notification, Modal} from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, WarningOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '@/services/auth.service';
 
@@ -11,6 +11,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
+  const [agreed18, setAgreed18] = useState<boolean>(false);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -39,7 +40,47 @@ const Register: React.FC = () => {
   return (
     <div className="auth-container">
       {contextHolder}
-      <div className="glass-panel" style={{ borderRadius: 16, padding: '40px 32px' }}>
+      {!agreed18 ? (
+        <Modal
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#ffd700' }}>
+              <WarningOutlined style={{ fontSize: 20 }} />
+              <span>Age Verification Required</span>
+            </div>
+          }
+          open={true}
+          closable={false}
+          maskClosable={false}
+          keyboard={false}
+          centered
+          onOk={() => setAgreed18(true)}
+          onCancel={() => navigate('/')}
+          okText="I am 18 or older"
+          cancelText="Cancel"
+          okButtonProps={{
+            style: {
+              background: 'linear-gradient(135deg, #ffd700 0%, #d4af37 100%)',
+              border: 'none',
+              color: '#000',
+              fontWeight: 600,
+            }
+          }}
+          cancelButtonProps={{
+            style: {
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: '#fff',
+            }
+          }}
+        >
+          <div style={{ padding: '16px 0', color: 'rgba(255, 255, 255, 0.85)', fontSize: '15px', lineHeight: '1.6' }}>
+            To access and register on this website, you must be <strong>at least 18 years old</strong>.
+            <br />
+            Do you confirm that you meet this age requirement?
+          </div>
+        </Modal>
+      ) : (
+        <div className="glass-panel" style={{ borderRadius: 16, padding: '40px 32px' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <Title className="cinema-title" level={2} style={{ margin: 0, color: '#ffd700', letterSpacing: '2px', fontWeight: 700 }}>RESERVE SEAT</Title>
           <Text style={{ color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '12px' }}>Join the Premiere Club</Text>
@@ -148,6 +189,7 @@ const Register: React.FC = () => {
           </div>
         </Form>
       </div>
+      )}
     </div>
   );
 };

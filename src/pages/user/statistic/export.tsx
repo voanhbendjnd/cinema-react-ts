@@ -190,7 +190,7 @@ const ExportReportPage: React.FC = () => {
                 <div>
                     <Progress
                         type="circle"
-                        percent={Math.round(rate)}
+                        percent={rate}
                         width={50}
                         strokeColor={{
                             '0%': '#ef4444',
@@ -283,7 +283,7 @@ const ExportReportPage: React.FC = () => {
                             >
                                 <Statistic
                                     title="Overall Occupancy Rate"
-                                    value={Math.round(summary.overallOccupancyRate)}
+                                    value={(summary.overallOccupancyRate)}
                                     suffix="%"
                                     valueStyle={{ color: '#f59e0b', fontSize: 24, fontWeight: 700 }}
                                 />
