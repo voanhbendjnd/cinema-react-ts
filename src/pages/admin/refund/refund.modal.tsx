@@ -66,7 +66,12 @@ export const RefundModal: React.FC<RefundModalProps> = ({
             setTicketInfo(res.data);
             setStep('confirm');
         } catch (error: any) {
-            console.error('Search error:', error);
+            api.error({
+                message: 'Try again!',
+                placement: 'topRight',
+                description: error.response?.data?.message,
+            });
+
             message.error(error?.response?.data?.message || 'Ticket not found');
         } finally {
             setLoading(false);

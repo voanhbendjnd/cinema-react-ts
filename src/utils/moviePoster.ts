@@ -10,5 +10,9 @@ export function getMoviePosterSrc(posterUrl?: string | null): string {
     if (normalized.startsWith('/api/v1/files/')) return `${baseURL}${normalized}`;
     if (normalized.startsWith('api/v1/files/')) return `${baseURL}/${normalized}`;
 
+    if (!normalized.includes('/')) {
+        return `${baseURL}/api/v1/files/movie-temps/${normalized}`;
+    }
+
     return `${baseURL}/api/v1/files/${normalized}`;
 }
