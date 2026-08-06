@@ -88,7 +88,7 @@ const CustomerManagement: React.FC = () => {
 
                     <Popconfirm
                         title={`${
-                            record.activated ? 'Deactivate' : 'Activate'
+                            record.activated ? 'Activate': 'Deactivate' 
                         } this user?`}
                         onConfirm={async () => {
                             try {

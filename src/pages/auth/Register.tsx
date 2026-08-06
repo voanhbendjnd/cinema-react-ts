@@ -11,7 +11,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
-  const [agreed18, setAgreed18] = useState<boolean>(false);
+  const [agreed18, setAgreed16] = useState<boolean>(false);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -53,9 +53,9 @@ const Register: React.FC = () => {
           maskClosable={false}
           keyboard={false}
           centered
-          onOk={() => setAgreed18(true)}
+          onOk={() => setAgreed16(true)}
           onCancel={() => navigate('/')}
-          okText="I am 18 or older"
+          okText="I am 16 or older"
           cancelText="Cancel"
           okButtonProps={{
             style: {
@@ -74,7 +74,7 @@ const Register: React.FC = () => {
           }}
         >
           <div style={{ padding: '16px 0', color: 'rgba(255, 255, 255, 0.85)', fontSize: '15px', lineHeight: '1.6' }}>
-            To access and register on this website, you must be <strong>at least 18 years old</strong>.
+            To access and register on this website, you must be <strong>at least 16 years old</strong>.
             <br />
             Do you confirm that you meet this age requirement?
           </div>
