@@ -32,7 +32,7 @@ import VoucherSelector, {type VoucherCursorResult, type VoucherItem} from './vou
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
-const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+fffconst WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const WEEKDAY_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -103,13 +103,6 @@ const buildDateRange = (): Dayjs[] => {
     return dates;
 };
 
-// ─────────────────────────────────────────────────────────────
-// SEAT GRID COMPONENT
-// ─────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────
-// 3D SEAT COMPONENTS
-// ─────────────────────────────────────────────────────────────
 
 const calculate3DPosition = (seatRow: string, seatNo: number, totalColumns: number): [number, number, number] => {
     const rowIndex = seatRow.toUpperCase().charCodeAt(0) - 65; // 'A' is 65
