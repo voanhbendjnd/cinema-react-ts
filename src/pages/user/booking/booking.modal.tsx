@@ -192,7 +192,6 @@ const SeatMap3D: React.FC<{
                 <directionalLight position={[10, 10, 5]} intensity={1} />
                 <pointLight position={[0, -2, -5]} intensity={0.5} color="lightblue" />
                 
-                {/* Screen */}
                 <mesh position={[0, 1, 1]}>
                     <boxGeometry args={[maxSeatNo * 0.8 + 4, 4, 0.2]} />
                     <meshStandardMaterial color="#222" emissive="#111" />
@@ -201,7 +200,6 @@ const SeatMap3D: React.FC<{
                     SCREEN
                 </Text>
 
-                {/* Seats */}
                 {seats.map(seat => {
                     const isSelected = selectedSeats.includes(seat.id);
                     const isSold = seat.bookingStatus === 'SOLD';
