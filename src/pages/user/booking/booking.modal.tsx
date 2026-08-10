@@ -257,32 +257,23 @@ const SeatGrid: React.FC<{
             }
             groups[seat.seatRow].push(seat);
         });
-        // ✅ Sort by seatNo để layout đúng
         Object.keys(groups).forEach((row) => {
             groups[row].sort((a, b) => a.seatNo - b.seatNo);
         });
         return groups;
     }, [seats]);
 
-    // ─────────────────────────────────────────────────────────
-    // FIND PAIR SEAT FOR SWEETBOX
-    // ─────────────────────────────────────────────────────────
     const findPairSeat = (seat: SeatLayoutDTO): SeatLayoutDTO | null => {
         if (seat.type !== 'SWEETBOX') return null;
 
         const sameRowSeats = seats.filter(s => s.seatRow === seat.seatRow);
         const currentNo = seat.seatNo;
 
-        // Nếu số ghế lẻ, tìm ghế chẵn kế bên (số+1)
-        // Nếu số ghế chẵn, tìm ghế lẻ kế bên (số-1)
         const pairNo = currentNo % 2 === 1 ? currentNo + 1 : currentNo - 1;
 
         return sameRowSeats.find(s => s.seatNo === pairNo) || null;
     };
 
-    // ─────────────────────────────────────────────────────────
-    // CHECK SEAT CONTINUITY (No gaps)
-    // ─────────────────────────────────────────────────────────
     const checkSeatContinuity = (newSelectedSeats: number[]): { valid: boolean; message?: string } => {
         if (newSelectedSeats.length <= 1) return { valid: true };
 
