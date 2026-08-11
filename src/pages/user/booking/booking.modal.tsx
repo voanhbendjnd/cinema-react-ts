@@ -289,11 +289,9 @@ const SeatGrid: React.FC<{
             groupByRow[seat.seatRow].push(seat.seatNo);
         });
 
-        // Check continuity for each row
         for (const [row, seatNos] of Object.entries(groupByRow)) {
             const sorted = seatNos.sort((a, b) => a - b);
 
-            // Check if there's a gap
             for (let i = 0; i < sorted.length - 1; i++) {
                 if (sorted[i + 1] - sorted[i] !== 1) {
                     const missingNo = sorted[i] + 1;
