@@ -314,10 +314,8 @@ const SeatGrid: React.FC<{
         let newSelectedSeats: number[];
 
         if (isCurrentlySelected) {
-            // ✅ DESELECT
             newSelectedSeats = selectedSeats.filter(id => id !== seat.id);
 
-            // If SWEETBOX, also deselect pair seat
             if (seat.type === 'SWEETBOX') {
                 const pairSeat = findPairSeat(seat);
                 if (pairSeat) {
