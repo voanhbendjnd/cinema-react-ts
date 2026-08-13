@@ -323,7 +323,6 @@ const SeatGrid: React.FC<{
                 }
             }
         } else {
-            // ✅ SELECT
             newSelectedSeats = [...selectedSeats, seat.id];
 
             // If SWEETBOX, auto-select pair seat
