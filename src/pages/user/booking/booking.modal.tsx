@@ -325,7 +325,6 @@ const SeatGrid: React.FC<{
         } else {
             newSelectedSeats = [...selectedSeats, seat.id];
 
-            // If SWEETBOX, auto-select pair seat
             if (seat.type === 'SWEETBOX') {
                 const pairSeat = findPairSeat(seat);
                 if (pairSeat && !newSelectedSeats.includes(pairSeat.id)) {
