@@ -340,7 +340,6 @@ const SeatGrid: React.FC<{
             return;
         }
 
-        // ✅ Apply selection with full list
         onSelectSeats(newSelectedSeats);
     };
 
